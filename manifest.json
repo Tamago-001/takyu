@@ -1,0 +1,22 @@
+{
+  "name": "神丘中学校 男子卓球部",
+  "short_name": "神丘卓球部",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#c90202",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/c90202/ffffff?text=卓球",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/512/c90202/ffffff?text=卓球",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

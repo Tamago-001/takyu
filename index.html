@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神丘中学校 男子卓球部 | 公式サイト</title>
+    
+    <!-- PWA用設定 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c90202">
+    
+    <!-- iOS (Safari) 向け最適化メタタグ -->
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192/c90202/ffffff?text=卓球">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="神丘卓球部">
+
+    <style>
+        /* === 共通設定 === */
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #ffffff;
+            --accent-color: #c90202;
+            --sub-bg: #1a1a1a;
+            --font-main: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        }
+
+        body.theme-red {
+            --bg-color: #c90202;
+            --text-color: #ffffff;
+            --accent-color: #0a0a0a;
+            --sub-bg: #a00000;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        /* === iOS用 PWAインストール案内バナー === */
+        #ios-install-banner {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            background: #222;
+            color: #fff;
+            padding: 12px 15px;
+            box-sizing: border-box;
+            z-index: 3000;
+            border-bottom: 2px solid var(--accent-color);
+            font-size: 0.85rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #ios-install-banner span { margin-right: 10px; }
+        #ios-install-banner button {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* === テーマ切り替えボタン === */
+        .theme-toggle-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a0a0a 50%, #c90202 50%);
+            border: 3px solid #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .theme-toggle-btn:hover { transform: scale(1.1); }
+
+        .show-on-red { display: none; }
+        body.theme-red .show-on-red { display: block; }
+        body.theme-red .show-on-black { display: none; }
+
+        /* === ヒーローセクション === */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .hero-bg-shape {
+            position: absolute;
+            top: 0; right: 0;
+            width: 60%; height: 100%;
+            background-color: var(--accent-color);
+            clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+            z-index: 1;
+            transition: background-color 0.5s ease;
+        }
+        .hero-image-placeholder {
+            position: absolute;
+            top: 0; right: 0;
+            width: 60%; height: 100%;
+            background: url('https://via.placeholder.com/800x1000/333333/ffffff?text=Image+Area') center/cover;
+            clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+            z-index: 2;
+            opacity: 0.6;
+            mix-blend-mode: luminosity;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            padding-left: 10%;
+            max-width: 800px;
+        }
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin: 0;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+        .hero-title span { color: var(--accent-color); }
+        body.theme-red .hero-title span { color: #0a0a0a; }
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* === セクション共通 === */
+        .section { padding: 80px 10%; }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-color);
+            margin-top: 10px;
+        }
+
+        /* === お知らせ === */
+        .news-box {
+            background-color: transparent;
+            border: 2px solid var(--accent-color);
+            padding: 20px 30px;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .news-box .badge {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        /* === メッセージ / 活動情報 === */
+        .message-box {
+            background-color: var(--sub-bg);
+            padding: 40px;
+            border-left: 8px solid var(--accent-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+            line-height: 2;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .info-card {
+            background-color: var(--sub-bg);
+            padding: 30px;
+        }
+        .info-card h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        /* === カウントダウン === */
+        .countdown-container {
+            background: linear-gradient(90deg, var(--accent-color), var(--bg-color));
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-top: 50px;
+        }
+        .countdown-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; }
+        .countdown-numbers { font-size: 3rem; font-weight: 900; letter-spacing: 2px; }
+
+        /* === FAQ === */
+        .faq-item {
+            border-bottom: 1px solid #333;
+            padding: 20px 0;
+        }
+        .faq-q {
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+        .faq-q::before {
+            content: 'Q.';
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+        .faq-a {
+            margin-top: 15px;
+            display: none;
+            padding-left: 30px;
+            color: #ccc;
+            white-space: pre-wrap;
+        }
+        body.theme-red .faq-a { color: #fff; }
+
+        /* === ミニゲーム === */
+        #game-section { text-align: center; }
+        #gameCanvas {
+            background-color: #2b5c3a;
+            border: 5px solid #ffffff;
+            max-width: 100%;
+            margin-top: 20px;
+        }
+
+        /* === フッター === */
+        footer {
+            background-color: #050505;
+            padding: 40px 10%;
+            text-align: center;
+            color: #777;
+            border-top: 1px solid #222;
+            position: relative;
+        }
+        .admin-link {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #444;
+            text-decoration: none;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .admin-link:hover { color: var(--accent-color); }
+
+        /* === 管理画面モーダル === */
+        #admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-content {
+            background: #111;
+            padding: 30px;
+            border: 2px solid var(--accent-color);
+            width: 90%;
+            max-width: 550px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .admin-content h3 { margin-top: 0; text-align: center; }
+        .admin-field { margin-bottom: 20px; text-align: left; }
+        .admin-field label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--accent-color); }
+        .admin-field input, .admin-field textarea {
+            width: 100%;
+            padding: 10px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        .admin-faq-edit {
+            background: #1a1a1a;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #333;
+        }
+        .btn-group { text-align: center; margin-top: 20px; }
+        button {
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        button.btn-sub { background: #444; }
+        button.btn-danger { background: #880000; }
+
+        /* === スコアボード CSS === */
+        .scoreboard-wrapper {
+            background: #111;
+            border: 2px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* 全画面モード時のスタイル */
+        .scoreboard-wrapper.fullscreen-mode {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            max-width: none;
+            border-radius: 0;
+            border: none;
+            z-index: 9999;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #000;
+        }
+
+        .scoreboard-header-controls {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .fullscreen-btn {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid #555;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .scoreboard-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .score-team {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .team-name {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #555;
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+            width: 80%;
+            margin-bottom: 10px;
+        }
+
+        .score-display {
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: #222;
+            border-radius: 8px;
+            padding: 15px 0;
+            cursor: pointer;
+            user-select: none;
+            color: var(--accent-color);
+            border: 1px solid #333;
+        }
+
+        /* 全画面表示時に得点数字を最大化 */
+        .scoreboard-wrapper.fullscreen-mode .score-display {
+            font-size: 25vh;
+            padding: 1vh 0;
+        }
+
+        .scoreboard-wrapper.fullscreen-mode .team-name {
+            font-size: 4vh;
+        }
+
+        .score-display:active {
+            transform: scale(0.98);
+        }
+
+        .serve-indicator {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .score-btn {
+            margin-top: 10px;
+            background: #333;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+        }
+
+        .scoreboard-divider {
+            padding: 0 15px;
+            text-align: center;
+        }
+
+        .match-score {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .scoreboard-reset-btn {
+            background: #444;
+            font-size: 0.8rem;
+            padding: 5px 10px;
+        }
+
+        @media (max-width: 600px) {
+            .score-display { font-size: 3rem; }
+            .scoreboard-wrapper { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- iOS用のアプリ追加案内バナー -->
+    <div id="ios-install-banner">
+        <span>画面下の共有ボタン ➔ 「ホーム画面に追加」でアプリ化できます！</span>
+        <button onclick="this.parentElement.style.display='none'">閉じる</button>
+    </div>
+
+    <div class="theme-toggle-btn" onclick="toggleTheme()">反転<br>TURN</div>
+
+    <div class="hero">
+        <div class="hero-bg-shape"></div>
+        <div class="hero-image-placeholder"></div>
+        <div class="hero-content">
+            <div class="show-on-black">
+                <h1 class="hero-title">玉を<span>擦れ。</span><br>県総体へ<span>挑む。</span></h1>
+                <p class="hero-subtitle">神丘中学校 男子卓球部 公式サイト</p>
+            </div>
+            <div class="show-on-red">
+                <h1 class="hero-title">情熱を<span>燃やせ。</span><br>限界を<span>超えろ。</span></h1>
+                <p class="hero-subtitle">KAMIOKA J.H.S. TABLE TENNIS CLUB</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="news-box">
+            <span class="badge">NEWS</span>
+            <span id="news-text"></span>
+        </div>
+
+        <h2 class="section-title">求める人物像</h2>
+        <div class="message-box">
+            <p>楽しみながらも、目標に向かって真剣に頑張れる人。<br>
+            そして、学校生活がきちんとしている人を歓迎します。</p>
+            <p>初心者でも大丈夫。一から丁寧に指導します。<br>
+            「とにかく玉を擦る！」この意識で、共に県総体を目指しましょう。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">活動情報</h2>
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>練習時間</h3>
+                <ul>
+                    <li><strong>平日：</strong> 授業後から2時間<br><span style="font-size:0.8rem; color:#aaa;">※10月からは1.5時間</span></li>
+                    <li><strong>長期休み・祝日：</strong> 3時間</li>
+                    <li><strong>活動頻度：</strong> 週4回まで（4月〜）</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h3>練習場所・内容</h3>
+                <ul>
+                    <li><strong>場所：</strong> 武道場</li>
+                    <li><strong>指導：</strong> 厳しいけれど、色々なことを教えてくれる顧問の先生</li>
+                    <li><strong>内容：</strong> 基本的な打ち込み、ゲーム練習、ダブルス練習など</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="countdown-container">
+            <div class="countdown-title">次の大会まで</div>
+            <div class="countdown-numbers" id="countdown">--日 --時間 --分 --秒</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">よくある質問</h2>
+        <div id="faq-list"></div>
+    </section>
+
+　　　　<!-- 審判用デジタルスコアボード -->
+    <section class="section" id="scoreboard-section">
+        <h2 class="section-title">デジタルスコアボード</h2>
+        
+        <!-- 全画面表示用の枠組 -->
+        <div class="scoreboard-wrapper" id="scoreboard-fullscreen-wrapper">
+            <div class="scoreboard-header-controls">
+                <button class="fullscreen-btn" onclick="toggleScoreboardFullscreen()">
+                    <span id="fullscreen-icon">⛶ 全画面表示</span>
+                </button>
+            </div>
+
+            <div class="scoreboard-container">
+                <div class="score-team" id="team1-box">
+                    <input type="text" value="選手 A" class="team-name" id="team1-name">
+                    <div class="score-display" id="score1" onclick="changeScore(1, 1)">0</div>
+                    <div class="serve-indicator" id="serve1">SERVE</div>
+                    <button class="score-btn" onclick="changeScore(1, -1)">-1</button>
+                </div>
+
+                <div class="scoreboard-divider">
+                    <div class="match-score">
+                        <span id="game1">0</span> - <span id="game2">0</span>
+                        <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">GAME</div>
+                    </div>
+                    <button class="scoreboard-reset-btn" onclick="resetScores()">リセット</button>
+                </div>
+
+                <div class="score-team" id="team2-box">
+                    <input type="text" value="選手 B" class="team-name" id="team2-name">
+                    <div class="score-display" id="score2" onclick="changeScore(2, 1)">0</div>
+                    <div class="serve-indicator" id="serve2" style="opacity: 0.2;">SERVE</div>
+                    <button class="score-btn" onclick="changeScore(2, -1)">-1</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="game-section">
+        <h2 class="section-title">ミニゲーム：壁打ちゲーム</h2>
+        <p>マウスや指でラケットを動かしてボールを打ち返そう！</p>
+        <canvas id="gameCanvas" width="600" height="300"></canvas>
+    </section>
+
+    <footer>
+        <p>&copy; 神丘中学校 男子卓球部. All Rights Reserved.</p>
+        <div class="admin-link" onclick="openAdmin()">管理画面へ</div>
+    </footer>
+
+    <!-- 管理画面モーダル -->
+    <div id="admin-modal">
+        <div class="admin-content" id="login-form">
+            <h3>管理者ログイン</h3>
+            <div class="admin-field">
+                <input type="password" id="admin-pass" placeholder="パスワードを入力">
+            </div>
+            <div class="btn-group">
+                <button onclick="loginAdmin()">ログイン</button>
+                <button class="btn-sub" onclick="closeAdmin()">キャンセル</button>
+            </div>
+        </div>
+
+        <div class="admin-content" id="admin-dashboard" style="display:none;">
+            <h3 style="color:var(--accent-color);">管理ダッシュボード</h3>
+            
+            <div class="admin-field">
+                <label>1. お知らせの編集</label>
+                <textarea id="edit-news" rows="3"></textarea>
+            </div>
+
+            <div class="admin-field">
+                <label>2. カウントダウン目標日時</label>
+                <input type="datetime-local" id="edit-countdown">
+            </div>
+
+            <div class="admin-field">
+                <label>3. FAQ（よくある質問）の編集</label>
+                <div id="admin-faq-list"></div>
+                <button type="button" class="btn-sub" onclick="addAdminFaqField()" style="margin-top:5px;">＋ 質問を追加</button>
+            </div>
+
+            <div class="btn-group">
+                <button onclick="saveAdminData()">保存して更新</button>
+                <button class="btn-sub" onclick="closeAdmin()">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
