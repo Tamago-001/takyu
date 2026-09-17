@@ -16,442 +16,541 @@
     <meta name="apple-mobile-web-app-title" content="神丘卓球部">
 
     <style>
-        /* === 共通設定 === */
-        :root {
-            --bg-color: #0a0a0a;
-            --text-color: #ffffff;
-            --accent-color: #c90202;
-            --sub-bg: #1a1a1a;
-            --font-main: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-        }
+        @charset "UTF-8";
 
-        body.theme-red {
-            --bg-color: #c90202;
-            --text-color: #ffffff;
-            --accent-color: #0a0a0a;
-            --sub-bg: #a00000;
-        }
+/* === 共通設定 & 変数 === */
+:root {
+    /* デフォルト（黒ラバー面）のテーマ */
+    --bg-color: #0a0a0a;
+    --text-color: #ffffff;
+    --accent-color: #c90202;
+    --sub-bg: #1a1a1a;
+    --font-main: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+}
 
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            transition: background-color 0.5s ease, color 0.5s ease;
-            overflow-x: hidden;
-        }
+/* 赤ラバー面のテーマ */
+body.theme-red {
+    --bg-color: #c90202;
+    --text-color: #ffffff;
+    --accent-color: #0a0a0a;
+    --sub-bg: #a00000;
+}
 
-        /* === iOS用 PWAインストール案内バナー === */
-        #ios-install-banner {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%;
-            background: #222;
-            color: #fff;
-            padding: 12px 15px;
-            box-sizing: border-box;
-            z-index: 3000;
-            border-bottom: 2px solid var(--accent-color);
-            font-size: 0.85rem;
-            align-items: center;
-            justify-content: space-between;
-        }
-        #ios-install-banner span { margin-right: 10px; }
-        #ios-install-banner button {
-            background: #444;
-            color: #fff;
-            border: none;
-            padding: 4px 10px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    overflow-x: hidden;
+}
 
-        /* === テーマ切り替えボタン === */
-        .theme-toggle-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #0a0a0a 50%, #c90202 50%);
-            border: 3px solid #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            cursor: pointer;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.8rem;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        .theme-toggle-btn:hover { transform: scale(1.1); }
+/* === iOS用 PWAインストール案内バナー === */
+#ios-install-banner {
+    display: none;
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%;
+    background: #222;
+    color: #fff;
+    padding: 12px 15px;
+    box-sizing: border-box;
+    z-index: 3000;
+    border-bottom: 2px solid var(--accent-color);
+    font-size: 0.85rem;
+    align-items: center;
+    justify-content: space-between;
+}
+#ios-install-banner span { 
+    margin-right: 10px; 
+}
+#ios-install-banner button {
+    background: #444;
+    color: #fff;
+    border: none;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
 
-        .show-on-red { display: none; }
-        body.theme-red .show-on-red { display: block; }
-        body.theme-red .show-on-black { display: none; }
+/* === ラバー反転ボタン（テーマ切り替え） === */
+.theme-toggle-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0a0a0a 50%, #c90202 50%);
+    border: 3px solid #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.8rem;
+    text-align: center;
+    transition: transform 0.3s;
+}
+.theme-toggle-btn:hover { 
+    transform: scale(1.1); 
+}
 
-        /* === ヒーローセクション === */
-        .hero {
-            position: relative;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-        }
-        .hero-bg-shape {
-            position: absolute;
-            top: 0; right: 0;
-            width: 60%; height: 100%;
-            background-color: var(--accent-color);
-            clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
-            z-index: 1;
-            transition: background-color 0.5s ease;
-        }
-        .hero-image-placeholder {
-            position: absolute;
-            top: 0; right: 0;
-            width: 60%; height: 100%;
-            background: url('https://via.placeholder.com/800x1000/333333/ffffff?text=Image+Area') center/cover;
-            clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
-            z-index: 2;
-            opacity: 0.6;
-            mix-blend-mode: luminosity;
-        }
-        .hero-content {
-            position: relative;
-            z-index: 10;
-            padding-left: 10%;
-            max-width: 800px;
-        }
-        .hero-title {
-            font-size: 5rem;
-            font-weight: 900;
-            line-height: 1.1;
-            margin: 0;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-        }
-        .hero-title span { color: var(--accent-color); }
-        body.theme-red .hero-title span { color: #0a0a0a; }
-        .hero-subtitle {
-            font-size: 1.5rem;
-            margin-top: 20px;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
+/* テーマ別表示切り替え */
+.show-on-red { display: none; }
+body.theme-red .show-on-red { display: block; }
+body.theme-red .show-on-black { display: none; }
 
-        /* === セクション共通 === */
-        .section { padding: 80px 10%; }
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin-bottom: 40px;
-            display: flex;
-            flex-direction: column;
-        }
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 4px;
-            background-color: var(--accent-color);
-            margin-top: 10px;
-        }
+/* === ヒーローセクション === */
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+.hero-bg-shape {
+    position: absolute;
+    top: 0; 
+    right: 0;
+    width: 60%; 
+    height: 100%;
+    background-color: var(--accent-color);
+    clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+    z-index: 1;
+    transition: background-color 0.5s ease;
+}
+.hero-image-placeholder {
+    position: absolute;
+    top: 0; 
+    right: 0;
+    width: 60%; 
+    height: 100%;
+    background: url('https://via.placeholder.com/800x1000/333333/ffffff?text=Image+Area') center/cover;
+    clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+    z-index: 2;
+    opacity: 0.6;
+    mix-blend-mode: luminosity;
+}
+.hero-content {
+    position: relative;
+    z-index: 10;
+    padding-left: 10%;
+    max-width: 800px;
+}
+.hero-title {
+    font-size: 5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 0;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+.hero-title span { 
+    color: var(--accent-color); 
+}
+body.theme-red .hero-title span { 
+    color: #0a0a0a; 
+}
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
 
-        /* === お知らせ === */
-        .news-box {
-            background-color: transparent;
-            border: 2px solid var(--accent-color);
-            padding: 20px 30px;
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .news-box .badge {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-            padding: 5px 15px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
+/* === セクション共通 === */
+.section { 
+    padding: 80px 10%; 
+}
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+}
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: var(--accent-color);
+    margin-top: 10px;
+}
 
-        /* === メッセージ / 活動情報 === */
-        .message-box {
-            background-color: var(--sub-bg);
-            padding: 40px;
-            border-left: 8px solid var(--accent-color);
-            font-size: 1.2rem;
-            font-weight: bold;
-            line-height: 2;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        .info-card {
-            background-color: var(--sub-bg);
-            padding: 30px;
-        }
-        .info-card h3 {
-            margin-top: 0;
-            font-size: 1.5rem;
-            color: var(--accent-color);
-        }
+/* === お知らせ === */
+.news-box {
+    background-color: transparent;
+    border: 2px solid var(--accent-color);
+    padding: 20px 30px;
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.news-box .badge {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    padding: 5px 15px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
 
-        /* === カウントダウン === */
-        .countdown-container {
-            background: linear-gradient(90deg, var(--accent-color), var(--bg-color));
-            padding: 30px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-top: 50px;
-        }
-        .countdown-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; }
-        .countdown-numbers { font-size: 3rem; font-weight: 900; letter-spacing: 2px; }
+/* === メッセージ / 活動情報 === */
+.message-box {
+    background-color: var(--sub-bg);
+    padding: 40px;
+    border-left: 8px solid var(--accent-color);
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 2;
+}
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+.info-card {
+    background-color: var(--sub-bg);
+    padding: 30px;
+}
+.info-card h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
 
-        /* === FAQ === */
-        .faq-item {
-            border-bottom: 1px solid #333;
-            padding: 20px 0;
-        }
-        .faq-q {
-            font-weight: bold;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-        }
-        .faq-q::before {
-            content: 'Q.';
-            color: var(--accent-color);
-            margin-right: 10px;
-        }
-        .faq-a {
-            margin-top: 15px;
-            display: none;
-            padding-left: 30px;
-            color: #ccc;
-            white-space: pre-wrap;
-        }
-        body.theme-red .faq-a { color: #fff; }
+/* === カウントダウン === */
+.countdown-container {
+    background: linear-gradient(90deg, var(--accent-color), var(--bg-color));
+    padding: 30px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-top: 50px;
+}
+.countdown-title { 
+    font-size: 1.5rem; 
+    font-weight: bold; 
+    margin-bottom: 10px; 
+}
+.countdown-numbers { 
+    font-size: 3rem; 
+    font-weight: 900; 
+    letter-spacing: 2px; 
+}
 
-        /* === ミニゲーム === */
-        #game-section { text-align: center; }
-        #gameCanvas {
-            background-color: #2b5c3a;
-            border: 5px solid #ffffff;
-            max-width: 100%;
-            margin-top: 20px;
-        }
+/* === FAQ（よくある質問） === */
+.faq-item {
+    border-bottom: 1px solid #333;
+    padding: 20px 0;
+}
+.faq-q {
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+.faq-q::before {
+    content: 'Q.';
+    color: var(--accent-color);
+    margin-right: 10px;
+}
+.faq-a {
+    margin-top: 15px;
+    display: none;
+    padding-left: 30px;
+    color: #ccc;
+    white-space: pre-wrap;
+}
+body.theme-red .faq-a { 
+    color: #fff; 
+}
 
-        /* === フッター === */
-        footer {
-            background-color: #050505;
-            padding: 40px 10%;
-            text-align: center;
-            color: #777;
-            border-top: 1px solid #222;
-            position: relative;
-        }
-        .admin-link {
-            position: absolute;
-            bottom: 10px;
-            right: 20px;
-            color: #444;
-            text-decoration: none;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-        .admin-link:hover { color: var(--accent-color); }
+/* === デジタルスコアボード === */
+.scoreboard-wrapper {
+    background: #111;
+    border: 2px solid var(--accent-color);
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    transition: all 0.3s ease;
+}
 
-        /* === 管理画面モーダル === */
-        #admin-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        .admin-content {
-            background: #111;
-            padding: 30px;
-            border: 2px solid var(--accent-color);
-            width: 90%;
-            max-width: 550px;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-sizing: border-box;
-        }
-        .admin-content h3 { margin-top: 0; text-align: center; }
-        .admin-field { margin-bottom: 20px; text-align: left; }
-        .admin-field label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--accent-color); }
-        .admin-field input, .admin-field textarea {
-            width: 100%;
-            padding: 10px;
-            background: #222;
-            border: 1px solid #444;
-            color: #fff;
-            box-sizing: border-box;
-        }
-        .admin-faq-edit {
-            background: #1a1a1a;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #333;
-        }
-        .btn-group { text-align: center; margin-top: 20px; }
-        button {
-            background: var(--accent-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 0 5px;
-        }
-        button.btn-sub { background: #444; }
-        button.btn-danger { background: #880000; }
+/* 全画面表示時のスタイル（スマホスクロール・タッチ対応） */
+.scoreboard-wrapper.fullscreen-mode {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100vw; 
+    height: 100vh;
+    max-width: none;
+    border-radius: 0;
+    border: none;
+    z-index: 9999;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #000;
+    
+    /* スマホでのタッチスクロールを許可 */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
 
-        /* === スコアボード CSS === */
-        .scoreboard-wrapper {
-            background: #111;
-            border: 2px solid var(--accent-color);
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 700px;
-            margin: 0 auto;
-            position: relative;
-            transition: all 0.3s ease;
-        }
+.scoreboard-header-controls {
+    text-align: right;
+    margin-bottom: 10px;
+}
 
-        /* 全画面モード時のスタイル */
-        .scoreboard-wrapper.fullscreen-mode {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            max-width: none;
-            border-radius: 0;
-            border: none;
-            z-index: 9999;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background: #000;
-        }
+.fullscreen-btn {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid #555;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
 
-        .scoreboard-header-controls {
-            text-align: right;
-            margin-bottom: 10px;
-        }
+.scoreboard-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
 
-        .fullscreen-btn {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            border: 1px solid #555;
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+.score-team {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+}
 
-        .scoreboard-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
+.team-name {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #555;
+    color: #fff;
+    font-size: 1.2rem;
+    text-align: center;
+    width: 80%;
+    margin-bottom: 10px;
+}
 
-        .score-team {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-        }
+.score-display {
+    font-size: 4.5rem;
+    font-weight: 900;
+    background: #222;
+    border-radius: 8px;
+    padding: 15px 0;
+    cursor: pointer;
+    user-select: none;
+    color: var(--accent-color);
+    border: 1px solid #333;
+}
 
-        .team-name {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #555;
-            color: #fff;
-            font-size: 1.2rem;
-            text-align: center;
-            width: 80%;
-            margin-bottom: 10px;
-        }
+/* 全画面表示時に表示領域に合わせて最適化 */
+.scoreboard-wrapper.fullscreen-mode .score-display {
+    font-size: 22vh;
+    padding: 1vh 0;
+}
 
-        .score-display {
-            font-size: 4.5rem;
-            font-weight: 900;
-            background: #222;
-            border-radius: 8px;
-            padding: 15px 0;
-            cursor: pointer;
-            user-select: none;
-            color: var(--accent-color);
-            border: 1px solid #333;
-        }
+.scoreboard-wrapper.fullscreen-mode .team-name {
+    font-size: 4vh;
+}
 
-        /* 全画面表示時に得点数字を最大化 */
-        .scoreboard-wrapper.fullscreen-mode .score-display {
-            font-size: 25vh;
-            padding: 1vh 0;
-        }
+.score-display:active {
+    transform: scale(0.98);
+}
 
-        .scoreboard-wrapper.fullscreen-mode .team-name {
-            font-size: 4vh;
-        }
+.serve-indicator {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffcc00;
+}
 
-        .score-display:active {
-            transform: scale(0.98);
-        }
+.score-btn {
+    margin-top: 10px;
+    background: #333;
+    padding: 5px 15px;
+    font-size: 0.9rem;
+}
 
-        .serve-indicator {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #ffcc00;
-        }
+.scoreboard-divider {
+    padding: 0 15px;
+    text-align: center;
+}
 
-        .score-btn {
-            margin-top: 10px;
-            background: #333;
-            padding: 5px 15px;
-            font-size: 0.9rem;
-        }
+.match-score {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
 
-        .scoreboard-divider {
-            padding: 0 15px;
-            text-align: center;
-        }
+.scoreboard-reset-btn {
+    background: #444;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+}
 
-        .match-score {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
+/* === ミニゲーム === */
+#game-section { 
+    text-align: center; 
+}
+#gameCanvas {
+    background-color: #2b5c3a;
+    border: 5px solid #ffffff;
+    max-width: 100%;
+    margin-top: 20px;
+}
 
-        .scoreboard-reset-btn {
-            background: #444;
-            font-size: 0.8rem;
-            padding: 5px 10px;
-        }
+/* === フッター === */
+footer {
+    background-color: #050505;
+    padding: 40px 10%;
+    text-align: center;
+    color: #777;
+    border-top: 1px solid #222;
+    position: relative;
+}
+.admin-link {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    color: #444;
+    text-decoration: none;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.admin-link:hover { 
+    color: var(--accent-color); 
+}
 
-        @media (max-width: 600px) {
-            .score-display { font-size: 3rem; }
-            .scoreboard-wrapper { padding: 10px; }
-        }
+/* === 管理画面モーダル === */
+#admin-modal {
+    display: none;
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+.admin-content {
+    background: #111;
+    padding: 30px;
+    border: 2px solid var(--accent-color);
+    width: 90%;
+    max-width: 550px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+.admin-content h3 { 
+    margin-top: 0; 
+    text-align: center; 
+}
+.admin-field { 
+    margin-bottom: 20px; 
+    text-align: left; 
+}
+.admin-field label { 
+    display: block; 
+    font-weight: bold; 
+    margin-bottom: 5px; 
+    color: var(--accent-color); 
+}
+.admin-field input, 
+.admin-field textarea {
+    width: 100%;
+    padding: 10px;
+    background: #222;
+    border: 1px solid #444;
+    color: #fff;
+    box-sizing: border-box;
+}
+.admin-faq-edit {
+    background: #1a1a1a;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+}
+.btn-group { 
+    text-align: center; 
+    margin-top: 20px; 
+}
+button {
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0 5px;
+}
+button.btn-sub { 
+    background: #444; 
+}
+button.btn-danger { 
+    background: #880000; 
+}
+
+/* === レスポンシブ調整 === */
+@media (max-width: 600px) {
+    .hero-title {
+        font-size: 3rem;
+    }
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    .section {
+        padding: 50px 5%;
+    }
+    .score-display { 
+        font-size: 3rem; 
+    }
+    .scoreboard-wrapper { 
+        padding: 10px; 
+    }
+}
+
+/* === スマホ向けレスポンシブ対応 === */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem; /* スマホ用に文字サイズを小さく調整 */
+        letter-spacing: 2px;
+        word-break: keep-all; /* 単語の途中で改行されるのを防ぐ */
+        overflow-wrap: break-word;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        margin-top: 15px;
+    }
+    
+    .hero-content {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -468,15 +567,15 @@
         <div class="hero-bg-shape"></div>
         <div class="hero-image-placeholder"></div>
         <div class="hero-content">
-            <div class="show-on-black">
-                <h1 class="hero-title">玉を<span>擦れ。</span><br>県総体へ<span>挑む。</span></h1>
-                <p class="hero-subtitle">神丘中学校 男子卓球部 公式サイト</p>
-            </div>
-            <div class="show-on-red">
-                <h1 class="hero-title">情熱を<span>燃やせ。</span><br>限界を<span>超えろ。</span></h1>
-                <p class="hero-subtitle">KAMIOKA J.H.S. TABLE TENNIS CLUB</p>
-            </div>
-        </div>
+    <div class="show-on-black">
+        <h1 class="hero-title">玉を<span>擦れ。</span><br>県総体へ<span>挑む。</span></h1>
+        <p class="hero-subtitle">神丘中学校 男子卓球部 公式サイト</p>
+    </div>
+    <div class="show-on-red">
+        <h1 class="hero-title">情熱を<span>燃やせ。</span><br>限界を<span>超えろ。</span></h1>
+        <p class="hero-subtitle">KAMIOKA J.H.S. TABLE TENNIS CLUB</p>
+    </div>
+</div>
     </div>
 
     <section class="section">
