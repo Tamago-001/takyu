@@ -157,92 +157,6 @@ function saveAdminData() {
     closeAdmin();
 }
 
-// --- ミニゲーム ---
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-
-let ballRadius = 6, x = canvas.width / 2, y = canvas.height - 30;
-let dx = 3, dy = -3;
-let paddleHeight = 10, paddleWidth = 75;
-let paddleX = (canvas.width - paddleWidth) / 2;
-
-function drawTableLines() {
-    ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, 0);
-    ctx.lineTo(canvas.width / 2, canvas.height);
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.closePath();
-}
-
-function drawBall() {
-    ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-    ctx.fillStyle = "orange";
-    ctx.fill();
-    ctx.closePath();
-}
-
-function drawPaddle() {
-    ctx.beginPath();
-    ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-    ctx.fillStyle = "#c90202";
-    ctx.fill();
-    ctx.closePath();
-}
-
-document.addEventListener("mousemove", e => {
-    let relativeX = e.clientX - canvas.getBoundingClientRect().left;
-    if(relativeX > 0 && relativeX < canvas.width) paddleX = relativeX - paddleWidth/2;
-});
-
-document.addEventListener("touchmove", e => {
-    e.preventDefault();
-    let relativeX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-    if(relativeX > 0 && relativeX < canvas.width) paddleX = relativeX - paddleWidth/2;
-}, {passive: false});
-
-function drawGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawTableLines();
-    drawBall();
-    drawPaddle();
-    
-    if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) dx = -dx;
-    if(y + dy < ballRadius) {
-        dy = -dy;
-    } else if(y + dy > canvas.height - ballRadius - paddleHeight) {
-        if(x > paddleX && x < paddleX + paddleWidth) {
-            dy = -dy * 1.05;
-            dx *= 1.05;
-        } else if (y + dy > canvas.height) {
-            x = canvas.width / 2;
-            y = canvas.height - 30;
-            dx = 3; dy = -3;
-        }
-    }
-    x += dx; y += dy;
-    requestAnimationFrame(drawGame);
-}
-
-// --- PWA Service Worker 登録 & iOS/Android 判定 ---
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker: 登録成功', reg))
-            .catch(err => console.error('Service Worker: 登録失敗', err));
-    });
-}
-
-// iOS Safari 判定（ホーム画面未追加の場合のみ案内バナーを表示）
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-
-if (isIOS && !isStandalone) {
-    document.getElementById('ios-install-banner').style.display = 'flex';
-}
-
 // --- スコアボード＆全画面表示制御 ---
 let score1 = 0, score2 = 0;
 let game1 = 0, game2 = 0;
@@ -255,29 +169,23 @@ async function toggleScoreboardFullscreen() {
     const btnIcon = document.getElementById('fullscreen-icon');
 
     if (!document.fullscreenElement && !wrapper.classList.contains('fullscreen-mode')) {
-        // 全画面起動
         if (wrapper.requestFullscreen) {
             await wrapper.requestFullscreen();
         }
         wrapper.classList.add('fullscreen-mode');
         btnIcon.innerText = "✕ 全画面解除";
-        
-        // 画面スリープ防止を有効化（対応ブラウザのみ）
         requestWakeLock();
     } else {
-        // 全画面解除
         if (document.exitFullscreen && document.fullscreenElement) {
             await document.exitFullscreen();
         }
         wrapper.classList.remove('fullscreen-mode');
         btnIcon.innerText = "⛶ 全画面表示";
-        
-        // スリープ防止解除
         releaseWakeLock();
     }
 }
 
-// ブラウザのEscキーなどで全画面解除された場合の追従処理
+// Escキーなどで全画面解除された場合の追従処理
 document.addEventListener('fullscreenchange', () => {
     const wrapper = document.getElementById('scoreboard-fullscreen-wrapper');
     const btnIcon = document.getElementById('fullscreen-icon');
@@ -288,7 +196,7 @@ document.addEventListener('fullscreenchange', () => {
     }
 });
 
-// 画面の自動消灯（スリープ）を防止する処理
+// 画面自動消灯防止（Wake Lock API）
 async function requestWakeLock() {
     try {
         if ('wakeLock' in navigator) {
@@ -306,7 +214,7 @@ function releaseWakeLock() {
     }
 }
 
-// --- 点数・サーブ権計算 ---
+// 点数・サーブ権計算
 function changeScore(team, delta) {
     if (team === 1) {
         score1 = Math.max(0, score1 + delta);
@@ -361,6 +269,96 @@ function renderScoreboard() {
     document.getElementById('serve2').style.opacity = (currentServe === 2) ? '1' : '0.1';
 }
 
+// --- ミニゲーム ---
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+let ballRadius = 6, x = canvas.width / 2, y = canvas.height - 30;
+let dx = 3, dy = -3;
+let paddleHeight = 10, paddleWidth = 75;
+let paddleX = (canvas.width - paddleWidth) / 2;
+
+function drawTableLines() {
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, 0);
+    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function drawBall() {
+    ctx.beginPath();
+    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+    ctx.fillStyle = "orange";
+    ctx.fill();
+    ctx.closePath();
+}
+
+function drawPaddle() {
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "#c90202";
+    ctx.fill();
+    ctx.closePath();
+}
+
+document.addEventListener("mousemove", e => {
+    let relativeX = e.clientX - canvas.getBoundingClientRect().left;
+    if(relativeX > 0 && relativeX < canvas.width) paddleX = relativeX - paddleWidth/2;
+});
+
+// キャンバス上でのタッチのみ操作し、画面全体のスクロール妨害を回避
+canvas.addEventListener("touchmove", e => {
+    e.preventDefault();
+    let relativeX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+    if(relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+    }
+}, {passive: false});
+
+function drawGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawTableLines();
+    drawBall();
+    drawPaddle();
+    
+    if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) dx = -dx;
+    if(y + dy < ballRadius) {
+        dy = -dy;
+    } else if(y + dy > canvas.height - ballRadius - paddleHeight) {
+        if(x > paddleX && x < paddleX + paddleWidth) {
+            dy = -dy * 1.05;
+            dx *= 1.05;
+        } else if (y + dy > canvas.height) {
+            x = canvas.width / 2;
+            y = canvas.height - 30;
+            dx = 3; dy = -3;
+        }
+    }
+    x += dx; y += dy;
+    requestAnimationFrame(drawGame);
+}
+
+// --- PWA Service Worker 登録 & iOS/Android 判定 ---
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker: 登録成功', reg))
+            .catch(err => console.error('Service Worker: 登録失敗', err));
+    });
+}
+
+// iOS Safari 判定（ホーム画面未追加時のみ案内表示）
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+if (isIOS && !isStandalone) {
+    document.getElementById('ios-install-banner').style.display = 'flex';
+}
+
 // 初期化実行
 renderUI();
+renderScoreboard();
 drawGame();
